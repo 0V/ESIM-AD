@@ -1,0 +1,23 @@
+# System
+.DS_Store
+.vscode/
+
+# Pipenv
+Pipfile.lock
+
+# Data files
+*.exr
+*.mp4
+*.npy
+*.raw
+*.tar.gz
+output/
+
+# PBRT
+*pbrt
+*.log
+
+# Python
+*.pyc
+__pycache__/
+.ipynb_checkpoints/

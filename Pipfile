@@ -1,0 +1,28 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+numpy = "*"
+scipy = "*"
+tqdm = "*"
+joblib = "*"
+opencv-python = "*"
+matplotlib = "*"
+scikit-image = "*"
+ipywidgets = {version = ">=7.0,<8.0"}
+ipython = "*"
+jupyter = "*"
+jupyterlab = "*"
+openexr = {version = "==1.3.2", markers = "sys_platform == 'darwin' or sys_platform == 'linux'"}
+"bede4a" = {file = "https://download.lfd.uci.edu/pythonlibs/archived/OpenEXR-1.3.2-cp310-cp310-win_amd64.whl", sys_platform = "== 'win32'"}
+
+[dev-packages]
+flake8 = "*"
+mypy = "*"
+isort = "*"
+yapf = "*"
+
+[requires]
+python_version = "3.10"
