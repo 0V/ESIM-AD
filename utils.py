@@ -4,11 +4,10 @@ import contextlib
 from typing import Any, List, Tuple, Union, TypeVar, Optional
 
 import cv2
-import Imath
 import numpy as np
 import joblib
-import OpenEXR
 import matplotlib.pyplot as plt
+from tinyexr import PyEXRImage
 from tqdm.auto import tqdm
 from ipywidgets import HBox, Play, IntSlider, jslink, interactive_output
 from numpy.typing import NDArray
@@ -176,21 +175,19 @@ def extract_gbuffers(file_path: str) -> Tuple[NDArray[np.double], ...]:
 
 class OpenEXRLoader(object):
     def __init__(self, filepath):
-        self.pt = Imath.PixelType(Imath.PixelType.FLOAT)
-        self.img_exr = OpenEXR.InputFile(filepath)
-        dw = self.img_exr.header()['dataWindow']
-        self.size = (dw.max.x - dw.min.x + 1, dw.max.y - dw.min.y + 1)
+        self.img_exr = PyEXRImage(filepath)
+        self.size = (self.img_exr.width, self.img_exr.height)
 
     def get_header(self):
         return self.img_exr.header()
 
     def get_channels(self, *names):
-        channels = [np.frombuffer(self.img_exr.channel(name, self.pt), dtype='float32') for name in names]
+        channels = [np.frombuffer(self.img_exr.channel(name), dtype='float32') for name in names]
         imgs = [c_img.reshape(self.size[1], self.size[0], 1) for c_img in channels]
         return imgs
 
     def get_image(self, *names):
-        channels = [np.frombuffer(self.img_exr.channel(name, self.pt), dtype='float32') for name in names]
+        channels = [np.frombuffer(self.img_exr.channel(name), dtype='float32') for name in names]
         imgs = [c_img.reshape(self.size[1], self.size[0]) for c_img in channels]
         return np.stack(imgs, axis=2).astype('double')
 
@@ -199,7 +196,7 @@ class OpenEXRLoader(object):
         labels = []
 
         for name in names:
-            c_str = self.img_exr.channel(name, self.pt)
+            c_str = self.img_exr.channel(name)
             channels.append(np.frombuffer(c_str, dtype='float32'))
             labels.append(name)
 
@@ -234,7 +231,7 @@ class OpenEXRLoader(object):
         labels = []
 
         for name in names:
-            c_str = self.img_exr.channel(name, self.pt)
+            c_str = self.img_exr.channel(name)
             channels.append(np.frombuffer(c_str, dtype='float32'))
             labels.append(name)
 
