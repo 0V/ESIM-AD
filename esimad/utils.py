@@ -13,13 +13,12 @@ from ipywidgets import HBox, Play, IntSlider, jslink, interactive_output
 from numpy.typing import NDArray
 from IPython.display import display
 
-Number = TypeVar('Number', int, float)
+Number = TypeVar("Number", int, float)
 Event = Tuple[int, int, float, float]
 
 
 @contextlib.contextmanager
 def tqdm_joblib(total: Optional[int] = None, **kwargs):
-
     pbar = tqdm(total=total, miniters=1, smoothing=0, **kwargs)
 
     class TqdmBatchCompletionCallback(joblib.parallel.BatchCompletionCallBack):
@@ -45,7 +44,7 @@ def plotPlayer(plot, start, end, step=1):
     interval = (end - start + 1) // 2
     slider = IntSlider(min=start, max=end, step=1, continuous_update=True)
     play = Play(min=start, max=end, step=step, interval=interval, description="Movie")
-    jslink((play, 'value'), (slider, 'value'))
+    jslink((play, "value"), (slider, "value"))
     controller = HBox([play, slider])
     output = interactive_output(plot, {"t": slider})
     return display(controller, output)
@@ -59,18 +58,18 @@ def plotFrame(frames, t):
     plt.show()
 
 
-def evs_to_video(evs: List[Tuple[Number, ...]],
-                 video_shape: Union[List[Any], Tuple[Any, ...]],
-                 fps: float = 60.0) -> NDArray[np.uint8]:
+def evs_to_video(
+    evs: List[Tuple[Number, ...]], video_shape: Union[List[Any], Tuple[Any, ...]], fps: float = 60.0
+) -> NDArray[np.uint8]:
     """
     video_shape: a tuple like (num_frames, height, width)
     """
-    video = np.zeros(video_shape, dtype='float32')
+    video = np.zeros(video_shape, dtype="float32")
     for x, y, t, p in evs:
         ti = round(t * fps)
         video[ti, y, x] = p
 
-    video = ((video * 0.5 + 0.5) * 255.0).astype('uint8')
+    video = ((video * 0.5 + 0.5) * 255.0).astype("uint8")
 
     return video
 
@@ -81,11 +80,11 @@ def video_save(filename: str, video: NDArray[np.uint8], fps: float = 60) -> None
     assert video.dtype == np.uint8
 
     if platform.system() == "Windows":
-        codec = cv2.VideoWriter_fourcc(*'mp4v')
+        codec = cv2.VideoWriter_fourcc(*"mp4v")
     elif platform.system() == "Linux":
-        codec = cv2.VideoWriter_fourcc(*'mp4v')
+        codec = cv2.VideoWriter_fourcc(*"mp4v")
     else:
-        codec = cv2.VideoWriter_fourcc(*'avc1')
+        codec = cv2.VideoWriter_fourcc(*"avc1")
     writer = cv2.VideoWriter(filename, codec, fps, (width, height))
 
     if video.ndim == 3:
@@ -101,13 +100,13 @@ def video_save(filename: str, video: NDArray[np.uint8], fps: float = 60) -> None
 def video_load(filename: str) -> NDArray[np.uint8]:
     cap = cv2.VideoCapture(filename)
     if not cap.isOpened():
-        raise IOError('Failed to open file: %s' % (filename))
+        raise IOError("Failed to open file: %s" % (filename))
 
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    mov = np.zeros((frames, height, width, 3), dtype='uint8')
+    mov = np.zeros((frames, height, width, 3), dtype="uint8")
     i = 0
     while True:
         ret, img = cap.read()
@@ -125,15 +124,15 @@ def video_load(filename: str) -> NDArray[np.uint8]:
 
 def evs_save(filename: str, evs: List[Event]) -> None:
     n = len(evs)
-    with open(filename, 'wb') as f:
-        f.write(struct.pack('i', n))
-        np.array(evs, dtype='float32').tofile(f)
+    with open(filename, "wb") as f:
+        f.write(struct.pack("i", n))
+        np.array(evs, dtype="float32").tofile(f)
 
 
 def evs_load(filename: str) -> List[Event]:
-    with open(filename, 'rb') as f:
-        n = struct.unpack('i', f.read(4))[0]
-        evs_npy = np.fromfile(f, dtype='float32').reshape((n, 4))
+    with open(filename, "rb") as f:
+        n = struct.unpack("i", f.read(4))[0]
+        evs_npy = np.fromfile(f, dtype="float32").reshape((n, 4))
 
     evs = [(int(e[0]), int(e[1]), float(e[2]), float(e[3])) for e in evs_npy]
     return evs
@@ -152,15 +151,15 @@ def extract_gbuffers(file_path: str) -> Tuple[NDArray[np.double], ...]:
     img_width, img_height = exr.size[:2]
 
     # make stacks of images
-    color_img = exr.get_image('R', 'G', 'B')
-    albedo_img = exr.get_image('Albedo.R', 'Albedo.G', 'Albedo.B')
-    normal_img = exr.get_image('Nx', 'Ny', 'Nz')
-    depth_img = exr.get_image('Depth')[..., 0]
+    color_img = exr.get_image("R", "G", "B")
+    albedo_img = exr.get_image("Albedo.R", "Albedo.G", "Albedo.B")
+    normal_img = exr.get_image("Nx", "Ny", "Nz")
+    depth_img = exr.get_image("Depth")[..., 0]
 
-    var_color_img = exr.get_image('Variance.R', 'Variance.G', 'Variance.B')
-    var_albedo_img = exr.get_image('Variance.Albedo.R', 'Variance.Albedo.G', 'Variance.Albedo.B')
-    var_normal_img = exr.get_image('Variance.Nx', 'Variance.Ny', 'Variance.Nz')
-    var_depth_img = exr.get_image('Variance.Depth')[..., 0]
+    var_color_img = exr.get_image("Variance.R", "Variance.G", "Variance.B")
+    var_albedo_img = exr.get_image("Variance.Albedo.R", "Variance.Albedo.G", "Variance.Albedo.B")
+    var_normal_img = exr.get_image("Variance.Nx", "Variance.Ny", "Variance.Nz")
+    var_depth_img = exr.get_image("Variance.Depth")[..., 0]
 
     xs_img = np.arange(img_width)
     ys_img = np.arange(img_height)
@@ -169,8 +168,7 @@ def extract_gbuffers(file_path: str) -> Tuple[NDArray[np.double], ...]:
     xyz_img = np.stack([xs_img, ys_img, depth_img], axis=-1)
     var_xyz_img = np.stack([np.zeros_like(xs_img), np.zeros_like(ys_img), var_depth_img], axis=-1)
 
-    return color_img, albedo_img, normal_img, xyz_img, \
-           var_color_img, var_albedo_img, var_normal_img, var_xyz_img
+    return color_img, albedo_img, normal_img, xyz_img, var_color_img, var_albedo_img, var_normal_img, var_xyz_img
 
 
 class OpenEXRLoader(object):
@@ -182,14 +180,14 @@ class OpenEXRLoader(object):
         return self.img_exr.header()
 
     def get_channels(self, *names):
-        channels = [np.frombuffer(self.img_exr.channel(name), dtype='float32') for name in names]
+        channels = [np.frombuffer(self.img_exr.channel(name), dtype="float32") for name in names]
         imgs = [c_img.reshape(self.size[1], self.size[0], 1) for c_img in channels]
         return imgs
 
     def get_image(self, *names):
-        channels = [np.frombuffer(self.img_exr.channel(name), dtype='float32') for name in names]
+        channels = [np.frombuffer(self.img_exr.channel(name), dtype="float32") for name in names]
         imgs = [c_img.reshape(self.size[1], self.size[0]) for c_img in channels]
-        return np.stack(imgs, axis=2).astype('double')
+        return np.stack(imgs, axis=2).astype("double")
 
     def show_channels(self, *names):
         channels = []
@@ -197,7 +195,7 @@ class OpenEXRLoader(object):
 
         for name in names:
             c_str = self.img_exr.channel(name)
-            channels.append(np.frombuffer(c_str, dtype='float32'))
+            channels.append(np.frombuffer(c_str, dtype="float32"))
             labels.append(name)
 
         imgs = []
@@ -210,7 +208,7 @@ class OpenEXRLoader(object):
         axs = [fig.add_subplot(t) for t in plot_tile]
 
         if len(names) > 1:
-            labels.append('all')
+            labels.append("all")
             imgs.append(np.array(channels).T.reshape(self.size[1], self.size[0], len(names)))
 
         for idx in range(len(imgs)):
@@ -220,8 +218,8 @@ class OpenEXRLoader(object):
             img[img > 1] = 1
             img[img < 0] = 0
             ax.set_title(label)
-            ax.imshow(img, cmap='gray')
-            ax.axis('off')
+            ax.imshow(img, cmap="gray")
+            ax.axis("off")
 
         plt.tight_layout()
         plt.show()
@@ -232,7 +230,7 @@ class OpenEXRLoader(object):
 
         for name in names:
             c_str = self.img_exr.channel(name)
-            channels.append(np.frombuffer(c_str, dtype='float32'))
+            channels.append(np.frombuffer(c_str, dtype="float32"))
             labels.append(name)
 
         imgs = []
@@ -251,8 +249,8 @@ class OpenEXRLoader(object):
             img[img > 1] = 1
             img[img < 0] = 0
             ax.set_title(label)
-            ax.imshow(img, cmap='gray')
-            ax.axis('off')
+            ax.imshow(img, cmap="gray")
+            ax.axis("off")
 
         plt.tight_layout()
         plt.show()

@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "esim-ad"
+version = "1.0.0"
+description = "Event-based Camera Simulation with Adaptive Denoising"
+authors = [
+  "Yuta Tsuji <ytsujilabo@gmail.com>",
+  "Tatsuya Yatagawa <tatsy.mail@gmail.com>",
+]
+readme = "README.md"
+license = "CC-4.0-BY-NC-SA"
+packages = [{ include = "esimad" }]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.11"
+numpy = "^1.25.0"
+scipy = "^1.11.1"
+tqdm = "^4.65.0"
+joblib = "^1.3.1"
+opencv-python = "^4.8.0.74"
+matplotlib = "^3.7.1"
+scikit-image = "^0.21.0"
+ipywidgets = ">=7.0,<8.0"
+ipython = "^8.14.0"
+jupyter = "^1.0.0"
+jupyterlab = "^4.0.2"
+tinyexr = { git = "https://github.com/tatsy/pytinyexr.git", rev = "1.0.5-rc0" }
+
+
+[tool.poetry.group.dev.dependencies]
+pyproject-flake8 = "^6.0.0.post1"
+mypy = "^1.4.1"
+isort = "^5.12.0"
+black = "^23.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+length_sort = "True"
+line_length = 120
+
+[tool.mypy]
+python_version = 3.9
+follow_imports = "silent"
+disallow_any_generics = "True"
+strict_optional = "True"
+check_untyped_defs = "True"
+allow_redefinition = "True"
+
+[tool.flake8]
+max-line-length = 120
+ignore = "Q000,E127,E203,E402,W503,W504"
+
+[tool.black]
+line-length = 120
+target-version = ["py39"]
