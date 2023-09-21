@@ -9,8 +9,6 @@ Y. Tsuji, Y. Yatagawa, H. Kubo, and S. Morishima, "Event-based Camera Simulation
 
 Prepare virtualenv using [Poetry](https://python-poetry.org/).
 
-#### MacOS
-
 ```shell
 # Install required modules
 poetry install --no-dev
